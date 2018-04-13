@@ -19,7 +19,7 @@ public class Player extends Thread {
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
-			
+			//System.out.println(id);
 			sleep(waitingTime);
 			System.out.println("player wakes up: "+id);
 			operator.addPlayer(this);

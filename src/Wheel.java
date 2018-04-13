@@ -7,18 +7,15 @@ public class Wheel extends Thread {
 	int onBoardCount;
 	LinkedList<Player> onBoardPlayers;
 	int maxWaitingTime;
+	Operator operator;
 
-	public Wheel(int capacity, int onBoardCount, LinkedList<Player> onBoardPlayers, int maxWaitingTime) {
+	public Wheel(int capacity, int onBoardCount, LinkedList<Player> onBoardPlayers, int maxWaitingTime,
+			Operator operator) {
 		this.capacity = capacity;
 		this.onBoardCount = onBoardCount;
 		this.onBoardPlayers = onBoardPlayers;
 		this.maxWaitingTime = maxWaitingTime;
-		try {
-			Thread.sleep(maxWaitingTime);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.operator = operator;
 	}
 
 	public void loadPlayers(Player player) {
@@ -35,34 +32,39 @@ public class Wheel extends Thread {
 				player.onBoard = true;
 				System.out.print(player.id + ", ");
 			}
-			System.out.println("\n");
+			System.out.println();
 		}
 	}
 
 	public void endRide() {
+		//System.out.println("guy?");
 		for (Player player : onBoardPlayers) {
 			player.onBoard = false;
 			player.rideComplete = true;
 		}
 		onBoardPlayers.clear();
 		onBoardCount = 0;
-
+		System.out.println();
+		if (operator.totalPlayerCount > 0){
+			//System.out.println(operator.totalPlayerCount);
+			sleepWake();
+		}
 	}
 
 	public void sleepWake() {
 		try {
 			System.out.println("wheel start sleep");
-			this.sleep(maxWaitingTime);
+			sleep(maxWaitingTime);
 			System.out.println("wheel end sleep");
 			this.runRide();
+			//System.out.println("hi there");
 			this.endRide();
-			System.out.println();
-			
+			// sleepWake();
 		} catch (InterruptedException e) {
 			System.out.println("Wheel is full, Let's go for a ride");
 			this.runRide();
 			this.endRide();
-			sleepWake();
+			//sleepWake();
 		}
 	}
 
