@@ -16,7 +16,7 @@ public class Operator {
 		wheel.start();
 		
 	}
-	public void addPlayer(Player player) {
+	public synchronized void  addPlayer(Player player) {
 		System.out.printf("passing player: %d to the operator\n", player.id);
 		wheel.loadPlayers(player);
 		totalPlayerCount--;
@@ -30,7 +30,7 @@ public class Operator {
 	public static void main(String[] args) {
 		Scanner scn = new Scanner(System.in);
 		int wheelCapacity = 5;
-		int maxWaitTime = scn.nextInt()*100;
+		int maxWaitTime = scn.nextInt();
 		int totalPlayerCount = scn.nextInt();
 		LinkedList<Player> playerList=new LinkedList<Player>();
 		//System.out.println("hi");
@@ -43,7 +43,7 @@ public class Operator {
 				String[] playerInfoSeprator = playerInfoString.split(",");
 				int playerID = Integer.parseInt(playerInfoSeprator[0]);
 				int playerWaitingTime = Integer.parseInt(playerInfoSeprator[1]);
-				Player player = new Player(playerID, playerWaitingTime*100, false, true, operator);
+				Player player = new Player(playerID, playerWaitingTime, false, true, operator);
 				playerList.add(player);
 				totalPlayerCount--;
 			}

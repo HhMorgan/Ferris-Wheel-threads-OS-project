@@ -47,11 +47,17 @@ public class Wheel extends Thread {
 		System.out.println();
 		if (operator.totalPlayerCount > 0){
 			//System.out.println(operator.totalPlayerCount);
-			sleepWake();
+			run();
 		}
 	}
 
 	public void sleepWake() {
+		
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
 		try {
 			System.out.println("wheel start sleep");
 			sleep(maxWaitingTime);
@@ -66,11 +72,5 @@ public class Wheel extends Thread {
 			this.endRide();
 			//sleepWake();
 		}
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		sleepWake();
 	}
 }
