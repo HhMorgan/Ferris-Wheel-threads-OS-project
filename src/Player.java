@@ -22,10 +22,10 @@ public class Player extends Thread {
 			//System.out.println(id);
 			sleep(waitingTime);
 			System.out.println("player wakes up: "+id);
-			operator.addPlayer(this);
+			operator.addPlayer(this,true);
 		} catch (InterruptedException e) {
 			System.out.println("player wakes up: "+id);
-			operator.addPlayer(this);
+			operator.addPlayer(this,true);
 		}
 		
 	}
