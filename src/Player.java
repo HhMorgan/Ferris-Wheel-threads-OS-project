@@ -5,28 +5,30 @@ public class Player extends Thread {
 	int waitingTime;
 	boolean onBoard;
 	boolean rideComplete;
-	Operator operator;
 
-	public Player(int id, int waitingTime, boolean onBoard, boolean rideComplete, Operator operator) {
+	public Player(int id, int waitingTime, boolean onBoard, boolean rideComplete) {
 		this.id = id;
 		this.waitingTime = waitingTime;
 		this.onBoard = onBoard;
 		this.rideComplete = rideComplete;
-		this.operator = operator;
+	}
+
+	private synchronized void notifyOperator() {
+		System.out.println("player wakes up: " + id);
+		System.out.println();
+		Operator.playerNotify(this);
 	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
-			//System.out.println(id);
+			// System.out.println(id);
 			sleep(waitingTime);
-			System.out.println("player wakes up: "+id);
-			operator.addPlayer(this,true);
+			notifyOperator();
 		} catch (InterruptedException e) {
-			System.out.println("player wakes up: "+id);
-			operator.addPlayer(this,true);
+			e.printStackTrace();
 		}
-		
+
 	}
 }

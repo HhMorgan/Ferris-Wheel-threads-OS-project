@@ -3,70 +3,85 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
 
 public class Operator {
-	Wheel wheel;
-	int totalPlayerCount;
-	int wheelCapacity;
-	int maxWaitTime;
+	static Wheel wheel;
+	static int totalPlayerCount;
+	static int wheelCapacity;
+	static int maxWaitTime;
+	static Queue<Player> queuedPlayers;
 
-	public Operator(int wheelCapacity, int maxWaitTime, int totalPlayerCount) {
-		this.totalPlayerCount = totalPlayerCount;
-		this.wheelCapacity = wheelCapacity;
-		this.maxWaitTime = maxWaitTime;
-	}
-
-	public void startWheel() {
-		wheel = new Wheel(wheelCapacity, 0, new ArrayList<Player>(), maxWaitTime, this);
+	public static void startWheel() {
+		wheel = new Wheel(wheelCapacity, 0, new ArrayList<Player>(), maxWaitTime);
 		wheel.start();
-
 	}
 
-	int waiting;
+	public static void playerNotify(Player player) {
+		if (wheel.onBoardCount < wheel.capacity) {
+			System.out.printf("passing player: %d to the operator\n", player.id);
+			System.out.println();
+			wheel.loadPlayers(player);
+			totalPlayerCount--;
 
-	public synchronized void addPlayer(Player player, boolean flag) {
-		System.out.printf("passing player: %d to the operator\n", player.id);
-		wheel.loadPlayers(player);
-		totalPlayerCount--;
-		if (wheel.capacity == wheel.onBoardCount) {
-			wheel.interrupt();
+			if (wheel.capacity == wheel.onBoardCount) {
+				wheel.interrupt();
+			}
+		} else {
+			queuedPlayers.add(player);
+		}
+	}
+
+	public static void wheelNotify() {
+		if (totalPlayerCount == 0)
+			return;
+
+		while (!queuedPlayers.isEmpty() && wheel.onBoardCount < wheel.capacity) {
+			Player player = queuedPlayers.poll();
+			System.out.printf("passing player: %d to the operator\n", player.id);
+			System.out.println();
+			wheel.loadPlayers(player);
+			totalPlayerCount--;
 
 		}
 
+		wheel.run();
 
+		if (wheel.capacity == wheel.onBoardCount)
+			wheel.interrupt();
 	}
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
-
-		FileReader in = new FileReader("input-2.txt");
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter the path for the input file:");
+		String path = sc.nextLine();
+		System.out.println();
+		FileReader in = new FileReader(path);
 		BufferedReader br = new BufferedReader(in);
-		int wheelCapacity = 5;
-		int maxWaitTime = Integer.parseInt(br.readLine());
-		// System.out.println(maxWaitTime);
-		int totalPlayerCount = Integer.parseInt(br.readLine());
-		// System.out.println(totalPlayerCount);
+		wheelCapacity = 5;
+		maxWaitTime = Integer.parseInt(br.readLine());
+		totalPlayerCount = Integer.parseInt(br.readLine());
 		LinkedList<Player> playerList = new LinkedList<Player>();
-		// System.out.println("hi");
-		Operator operator = new Operator(wheelCapacity, maxWaitTime, totalPlayerCount);
-		// System.out.println("guy?");
+		queuedPlayers = new LinkedList<Player>();
 		String playerInfoString;
-		while ((playerInfoString = br.readLine()) != null && totalPlayerCount > 0) {
+		while ((playerInfoString = br.readLine()) != null) {
 
-			// System.out.println(playerInfoString);
 			if (playerInfoString.length() > 0) {
 				String[] playerInfoSeprator = playerInfoString.split(",");
 				int playerID = Integer.parseInt(playerInfoSeprator[0]);
 				int playerWaitingTime = Integer.parseInt(playerInfoSeprator[1]);
-				Player player = new Player(playerID, playerWaitingTime, false, true, operator);
+				Player player = new Player(playerID, playerWaitingTime, false, true);
 				playerList.add(player);
-				totalPlayerCount--;
 			}
 		}
-		// operator.wheel.start();
-		operator.startWheel();
+
+		in.close();
+
+		startWheel();
 		for (Player player : playerList) {
 			player.start();
 		}
-		in.close();
+
 	}
 }
