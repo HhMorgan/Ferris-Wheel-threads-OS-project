@@ -56,6 +56,7 @@ public class Operator {
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter the path for the input file:");
 		String path = sc.nextLine();
+		sc.close();
 		System.out.println();
 		FileReader in = new FileReader(path);
 		BufferedReader br = new BufferedReader(in);
